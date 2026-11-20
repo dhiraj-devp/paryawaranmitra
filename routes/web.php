@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IndustryUnitController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PortalEntryController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServiceController;
@@ -160,8 +161,16 @@ Route::prefix('admin')->name('admin.')->group(function () use ($officeClients, $
 
     Route::middleware(['auth:admin', 'portal:admin'])->group(function () use ($officeClients, $officeCatalog, $officeWork, $officeQuotations, $officeFollowUps) {
         Route::post('logout', LogoutController::class)->name('logout');
+        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('dashboard', DashboardController::class)->name('dashboard');
         Route::get('search', [SearchController::class, 'index'])->name('search');
+        Route::middleware('permission:users.manage')->group(function () {
+            Route::get('users/create', [UserDirectoryController::class, 'create'])->name('users.create');
+            Route::post('users', [UserDirectoryController::class, 'store'])->name('users.store');
+            Route::get('users/{user}/edit', [UserDirectoryController::class, 'edit'])->name('users.edit');
+            Route::put('users/{user}', [UserDirectoryController::class, 'update'])->name('users.update');
+        });
         Route::get('users', [UserDirectoryController::class, 'index'])->middleware('permission:users.view')->name('users.index');
         Route::get('settings', [SettingsController::class, 'index'])->middleware('permission:settings.view')->name('settings.index');
         Route::get('settings/audit-logs', [AuditLogController::class, 'index'])->middleware('permission:audit.view')->name('settings.audit-logs');
@@ -180,6 +189,8 @@ Route::prefix('staff')->name('staff.')->group(function () use ($officeClients, $
 
     Route::middleware(['auth:staff', 'portal:staff'])->group(function () use ($officeClients, $officeCatalog, $officeWork, $officeQuotations, $officeFollowUps) {
         Route::post('logout', LogoutController::class)->name('logout');
+        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('dashboard', DashboardController::class)->name('dashboard');
         Route::get('search', [SearchController::class, 'index'])->name('search');
         $officeClients();

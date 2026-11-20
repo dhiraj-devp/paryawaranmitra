@@ -3,7 +3,13 @@
 @section('title', __('ui.users.title'))
 
 @section('content')
-    <x-ui.page-header :title="__('ui.users.title')" :description="__('ui.users.intro')" />
+    <x-ui.page-header :title="__('ui.users.title')" :description="__('ui.users.intro')">
+        @can('create', App\Models\User::class)
+            <x-slot:actions>
+                <x-ui.button :href="route(auth()->user()->portal->value.'.users.create')">{{ __('ui.users.create') }}</x-ui.button>
+            </x-slot:actions>
+        @endcan
+    </x-ui.page-header>
 
     <form method="get" class="mb-4 max-w-sm">
         <x-ui.input id="user-search" :label="__('ui.header.search')" type="search" name="q" value="{{ $search }}" placeholder="{{ __('ui.users.search_placeholder') }}" />
@@ -23,6 +29,7 @@
                     <th class="px-4 py-3 font-medium">{{ __('ui.users.portal') }}</th>
                     <th class="px-4 py-3 font-medium">{{ __('ui.users.roles') }}</th>
                     <th class="px-4 py-3 font-medium">{{ __('ui.users.status') }}</th>
+                    <th class="px-4 py-3 text-right font-medium">{{ __('ui.table.actions') }}</th>
                 </x-slot:head>
                 @foreach ($users as $account)
                     <tr class="hover:bg-forest-50">
@@ -38,6 +45,11 @@
                             <x-ui.badge :tone="$account->is_active ? 'success' : 'neutral'">
                                 {{ $account->is_active ? __('ui.users.active') : __('ui.users.inactive') }}
                             </x-ui.badge>
+                        </td>
+                        <td class="px-4 py-3">
+                            @can('update', $account)
+                                <x-ui.row-actions :edit="route(auth()->user()->portal->value.'.users.edit', $account)" />
+                            @endcan
                         </td>
                     </tr>
                 @endforeach

@@ -54,6 +54,10 @@
                     <p class="truncate text-sm font-medium text-ink">{{ $user->name }}</p>
                     <p class="truncate text-xs text-muted">{{ $portal->label() }}</p>
                 </div>
+                <a href="{{ route($portal->value.'.profile.edit') }}" class="flex items-center gap-3 border-b border-line px-3 py-2.5 text-sm text-ink hover:bg-forest-50">
+                    <x-ui.icon name="user" class="h-4 w-4 text-forest-800" />
+                    {{ __('ui.profile.title') }}
+                </a>
                 @if ($user->hasPermission('users.view'))
                     <a href="{{ route($portal->value.'.users.index') }}" class="flex items-center gap-3 border-b border-line px-3 py-2.5 text-sm text-ink hover:bg-forest-50">
                         <x-ui.icon name="users" class="h-4 w-4 text-forest-800" />

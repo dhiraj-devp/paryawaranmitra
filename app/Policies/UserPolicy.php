@@ -18,12 +18,12 @@ class UserPolicy
 
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermission('users.manage');
     }
 
     public function update(User $user, User $subject): bool
     {
-        return false;
+        return $user->hasPermission('users.manage');
     }
 
     public function delete(User $user, User $subject): bool

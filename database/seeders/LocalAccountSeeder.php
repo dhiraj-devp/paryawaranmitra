@@ -24,15 +24,6 @@ class LocalAccountSeeder extends Seeder
             portal: Portal::Admin,
             roleSlug: 'super-admin',
         );
-
-        $this->seedAccount(
-            label: 'STAFF',
-            email: env('STAFF_EMAIL'),
-            password: env('STAFF_PASSWORD'),
-            name: env('STAFF_NAME', 'Office Executive'),
-            portal: Portal::Staff,
-            roleSlug: env('STAFF_ROLE', 'office-executive'),
-        );
     }
 
     private function seedAccount(string $label, mixed $email, mixed $password, mixed $name, Portal $portal, mixed $roleSlug): void

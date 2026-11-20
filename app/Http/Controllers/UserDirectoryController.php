@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Users\SaveUser;
+use App\Http\Requests\SaveUserRequest;
+use App\Models\Role;
 use App\Models\User;
 use App\Support\LikeTerm;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -33,6 +37,46 @@ class UserDirectoryController extends Controller
             'users' => $users,
             'search' => $search ?? '',
         ]);
+    }
+
+    public function create(): View
+    {
+        $this->authorize('create', User::class);
+
+        return view('users.create', [
+            'account' => tap(new User(['is_active' => true, 'portal' => \App\Enums\Portal::Staff]), function (User $user) {
+                $user->setRelation('roles', collect());
+            }),
+            'roles' => Role::query()->orderBy('portal')->orderBy('name')->get(),
+        ]);
+    }
+
+    public function store(SaveUserRequest $request, SaveUser $action): RedirectResponse
+    {
+        $action->execute(new User, $request->userAttributes(), $request->user());
+
+        return redirect()
+            ->to($this->portalRoute('users.index'))
+            ->with('status', __('ui.users.saved'));
+    }
+
+    public function edit(User $user): View
+    {
+        $this->authorize('update', $user);
+
+        return view('users.edit', [
+            'account' => $user->load('roles'),
+            'roles' => Role::query()->orderBy('portal')->orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(SaveUserRequest $request, User $user, SaveUser $action): RedirectResponse
+    {
+        $action->execute($user, $request->userAttributes(), $request->user());
+
+        return redirect()
+            ->to($this->portalRoute('users.index'))
+            ->with('status', __('ui.users.saved'));
     }
 
     private function term(Request $request): ?string
